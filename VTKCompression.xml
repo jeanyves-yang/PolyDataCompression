@@ -8,22 +8,13 @@
   <label>IO</label>
   <description>Input/Output parameters</description>
 
-  <boolean>
-    <name>compression</name>
-    <channel>input</channel>
-    <label>compression</label>
-    <longflag>compression</longflag>
-    <flag>c</flag>
-    <description>compression of the images given as parameters</description>
-  </boolean>
-
   <string>
     <name>encoding</name>
     <label>encoding</label>
     <channel>input</channel>
     <longflag>encoding</longflag>
     <flag>e</flag>
-    <description>ASCII or Binary file</description>
+    <description>Data encoding: BINARY, ASCII or APPENDED</description>
   </string>
 
   <string-vector>

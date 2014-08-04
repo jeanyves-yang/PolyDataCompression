@@ -22,7 +22,7 @@ std::string changeEndofFileName (std::string fileName, std::string change )
 {
   std::string extension = ExtensionofFile( fileName ) ;
   fileName.replace( fileName.end()-extension.length()-1 , fileName.end() , change ) ;
-  fileName = fileName + "." + extension ;
+  fileName = fileName + ".vtp" ;
   return fileName;
 }
 
@@ -33,9 +33,13 @@ int main(int argc, char *argv[])
   int count = 1 ;
   while( strcmp( argv[ count ] , flagFileName )  )
   {
-    if( count >= argc )
+    if( count >= argc-1 )
     {
-      std::cout << " Missing -f flag." << std::endl ;
+      std::cout << "Missing -f flag" <<std::endl ;
+      std::cout << "USAGE:" << std::endl << "     ./VTKCompression  [--returnparameterfile <std::string>]"
+                << std::endl << "                       [--processinformationaddress <std::string>] [--xml]"
+                << std::endl << "                       [--echo] [-f <std::vector<std::string>>] [-e]"
+                << std::endl << "                       <std::string>] [--] [--version] [-h]" << std::endl ;
       return EXIT_FAILURE ;
     }
     count ++ ;
@@ -91,13 +95,26 @@ int main(int argc, char *argv[])
       }
       else
       {
-        vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer< vtkXMLPolyDataReader >::New() ;
-        reader->SetFileName( fileNameList[i].c_str() ) ;
-        reader->Update() ;
-        vtkSmartPointer< vtkXMLPolyDataWriter > writer = vtkSmartPointer< vtkXMLPolyDataWriter >::New() ;
-        writer->SetFileName( outputFileName.c_str() ) ;
-        writer->SetDataModeToBinary();
-        writer->Update() ;
+          vtkSmartPointer< vtkXMLPolyDataReader > reader = vtkSmartPointer< vtkXMLPolyDataReader >::New() ;
+          reader->SetFileName( fileNameList[i].c_str() ) ;
+          reader->Update() ;
+          vtkSmartPointer< vtkXMLPolyDataWriter > writer = vtkSmartPointer< vtkXMLPolyDataWriter >::New() ;
+          writer->SetFileName( outputFileName.c_str() ) ;
+          writer->SetInputData( reader->GetOutput() ) ;
+          if( !strcmp( encoding.c_str() , "BINARY" ) )
+          {
+            writer->SetDataModeToBinary();
+          }
+          else if(!strcmp( encoding.c_str() , "APPENDED" ) )
+          {
+            writer->SetDataModeToAppended();
+          }
+          else
+          {
+            writer->SetDataModeToAscii();
+          }
+          //writer->SetCompressor( writer->GetCompressor() ) ;
+          writer->Update() ;
       }
     }
     else
