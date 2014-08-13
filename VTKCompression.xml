@@ -14,8 +14,16 @@
     <channel>input</channel>
     <longflag>encoding</longflag>
     <flag>e</flag>
-    <description>Data encoding: BINARY, ASCII or APPENDED</description>
+    <description>Data encoding: binary, ascii or appended</description>
   </string>
+<integer>
+<name>compressorLevel</name>
+<longflag>compressorLevel</longflag>
+<label>compressorLevel</label>
+<flag>c</flag>
+<description>compressorLevel, between 0 and 9. Set by default at 1.</description>
+<default>1</default>
+</integer>
 
   <string-vector>
     <channel>input</channel>

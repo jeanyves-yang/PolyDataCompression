@@ -9,24 +9,24 @@
 #include <vtkPolyDataWriter.h>
 #include <vtkXMLPolyDataReader.h>
 #include <vtkXMLPolyDataWriter.h>
+#include <vtkZLibDataCompressor.h>
 
-
-std::string ExtensionofFile( std::string fileName )
+std::string ExtensionOfFile( std::string fileName )
 {
     std::string extension ;
     extension = fileName.substr( fileName.find_last_of(".")+1,fileName.size()-fileName.find_last_of( "." ) + 1 ) ;
     return extension ;
 }
 
-std::string changeEndofFileName (std::string fileName, std::string change )
+std::string ChangeEndOfFileName ( std::string fileName, std::string change )
 {
-  std::string extension = ExtensionofFile( fileName ) ;
+  std::string extension = ExtensionOfFile( fileName ) ;
   fileName.replace( fileName.end()-extension.length()-1 , fileName.end() , change ) ;
   fileName = fileName + ".vtp" ;
   return fileName;
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
   std::vector <std::string> fileNameList;
   char * flagFileName ( "-f" ) ;
@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
     if( count >= argc-1 )
     {
       std::cout << "Missing -f flag" <<std::endl ;
-      std::cout << "USAGE:" << std::endl << "     ./VTKCompression  [--returnparameterfile <std::string>]"
-                << std::endl << "                       [--processinformationaddress <std::string>] [--xml]"
-                << std::endl << "                       [--echo] [-f <std::vector<std::string>>] [-e]"
+      std::cout << "USAGE:" << std::endl << "     ./VTKCompression  [-e] [<std::string>] "
+                << std::endl << "                       [-c <integer>] "
+                << std::endl << "                       [-f <std::vector<std::string>>] "
                 << std::endl << "                       <std::string>] [--] [--version] [-h]" << std::endl ;
       return EXIT_FAILURE ;
     }
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   {
     if( argv[ count ][ 0 ] == '-' )
     {
-      std::cout<<"-f flag is not the last flag."<<std::endl;
+      std::cout<<"Please move any flags before the -f flag. -f flag should be the last flag. "<<std::endl;
       return EXIT_FAILURE ;
     }
     else
@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
     {
       std::cout<<fileNameList[i]<<std::endl;
       std::string outputFileName = fileNameList[i] ;
-      std::string extension = ExtensionofFile( outputFileName ) ;
+      std::string extension = ExtensionOfFile( outputFileName ) ;
       std::string replacement = "-compressed" ;
-      outputFileName = changeEndofFileName( outputFileName , replacement) ;
+      outputFileName = ChangeEndOfFileName( outputFileName , replacement) ;
 
       if( extension =="vtk" )
       {
@@ -78,11 +78,16 @@ int main(int argc, char *argv[])
         vtkSmartPointer< vtkXMLPolyDataWriter > writer = vtkSmartPointer< vtkXMLPolyDataWriter >::New() ;
         writer->SetFileName( outputFileName.c_str() ) ;
         writer->SetInputData( reader->GetOutput() ) ;
-        if( !strcmp( encoding.c_str() , "BINARY" ) )
+        vtkZLibDataCompressor *compressor = dynamic_cast<vtkZLibDataCompressor*> (writer->GetCompressor()) ;
+        if( compressor )
+        {
+          compressor->SetCompressionLevel( compressorLevel ) ;
+        }
+        if( !strcmp( encoding.c_str() , "binary" ) )
         {
           writer->SetDataModeToBinary();
         }
-        else if(!strcmp( encoding.c_str() , "APPENDED" ) )
+        else if(!strcmp( encoding.c_str() , "appended" ) )
         {
           writer->SetDataModeToAppended();
         }
@@ -90,7 +95,6 @@ int main(int argc, char *argv[])
         {
           writer->SetDataModeToAscii();
         }
-        //writer->SetCompressor( writer->GetCompressor() ) ;
         writer->Update() ;
       }
       else
@@ -101,6 +105,11 @@ int main(int argc, char *argv[])
           vtkSmartPointer< vtkXMLPolyDataWriter > writer = vtkSmartPointer< vtkXMLPolyDataWriter >::New() ;
           writer->SetFileName( outputFileName.c_str() ) ;
           writer->SetInputData( reader->GetOutput() ) ;
+          vtkZLibDataCompressor *compressor = dynamic_cast<vtkZLibDataCompressor*> (writer->GetCompressor()) ;
+          if( compressor )
+          {
+            compressor->SetCompressionLevel( compressorLevel ) ;
+          }
           if( !strcmp( encoding.c_str() , "BINARY" ) )
           {
             writer->SetDataModeToBinary();
@@ -113,13 +122,11 @@ int main(int argc, char *argv[])
           {
             writer->SetDataModeToAscii();
           }
-          //writer->SetCompressor( writer->GetCompressor() ) ;
           writer->Update() ;
       }
     }
     else
-    {
-    }
+    {}
   }
   return EXIT_SUCCESS ;
 }

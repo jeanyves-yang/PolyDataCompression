@@ -8,10 +8,6 @@ set_tests_properties(VTKCompressionFlag PROPERTIES WILL_FAIL true )
 
 # Test checking that the file compressed is properly written
 add_test(NAME VTKCompressionCorrectOutput COMMAND $<TARGET_FILE:VTKCompression>
-    -e BINARY
+    -e binary
     -f Data/*.vtk
   )
-
-# Test for the command --help
-add_test(NAME PrintHelp COMMAND $<TARGET_FILE:VTKCompression> --help)
-set_tests_properties(VTKCompressionFlag PROPERTIES WILL_FAIL true )
