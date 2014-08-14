@@ -1,13 +1,10 @@
-set(TEMP_DIR ${Threshold_BINARY_DIR}/Testing/Temporary )
-set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Data )
-
 # Test checking that the program cannot run without the flag -f
-add_test(NAME VTKCompressionFlag COMMAND $<TARGET_FILE:VTKCompression>
+add_test(NAME PolyDataCompressionFlag COMMAND $<TARGET_FILE:PolyDataCompression>
         -e ASCII)
-set_tests_properties(VTKCompressionFlag PROPERTIES WILL_FAIL true )
+set_tests_properties(PolyDataCompressionFlag PROPERTIES WILL_FAIL true )
 
 # Test checking that the file compressed is properly written
-add_test(NAME VTKCompressionCorrectOutput COMMAND $<TARGET_FILE:VTKCompression>
+add_test(NAME PolyDataCompressionCorrectOutput COMMAND $<TARGET_FILE:PolyDataCompression>
     -e binary
     -f Data/*.vtk
   )

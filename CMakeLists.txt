@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # This project is designed to be built outside the Insight source tree.
-project(VTKCompression)
+project(PolyDataCompression)
 
 # Find SlicerExecutionModel
 find_package(SlicerExecutionModel REQUIRED)
@@ -17,7 +17,7 @@ find_package(VTK 6.1 REQUIRED NO MODULE)
 include(${VTK_USE_FILE})
 
 SEMMacroBuildCLI(
-  NAME VTKCompression
+  NAME PolyDataCompression
   EXECUTABLE_ONLY
   TARGET_LIBRARIES ${ITK_LIBRARIES} ${VTK_LIBRARIES}
   LINK_DIRECTORIES ${ITK_LIBRARY_DIRS} ${VTK_LIBRARY_DIRS}
