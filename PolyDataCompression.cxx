@@ -1,5 +1,5 @@
 #include "PolyDataCompressionCLP.h"
-#include "string.h"
+#include <string>
 #include <iostream>
 #include <sstream>
 #include <cstring>
@@ -34,8 +34,10 @@ vtkSmartPointer< vtkPolyData > ReadFile( const char* fileName , std::string exte
         reader->Update() ;
         return reader->GetOutput() ;
     }
-    std::cout << "input file is not a vtk or a vtp file." << std::endl ;
-    return NULL ;
+    else
+    {
+        return NULL ;
+    }
 }
 
 int WriteFile( std::string encoding , const char* outputFileName ,
@@ -104,7 +106,7 @@ int main( int argc, char *argv[] )
     for( size_t i = 0 ; i < fileNameList.size() ; i++ )
     {
         std::string testFileName = itksys::SystemTools::GetFilenameName( ( fileNameList[ i ] ) ) ;
-        if( testFileName.find( append + "vtk" ) != std::string::npos || testFileName.find( append + "vtk" ) != std::string::npos ) //looks if "-compressed" is already at the end of the filename> if yes, the file will be skipped
+        if(  testFileName.find( append + ".vtp" ) != std::string::npos ) //looks if "-compressed" is already at the end of the filename -> if yes, the file will be skipped
         {
             std::cout << fileNameList[ i ] << " already compressed." << std::endl ;
             continue ;
@@ -113,7 +115,14 @@ int main( int argc, char *argv[] )
         {
             vtkSmartPointer< vtkPolyData > readerPolyData = vtkSmartPointer< vtkPolyData >::New() ;
             std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append ) ;
-            readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
+            if ( ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) == NULL )
+            {
+                std::cout << "input file is neither a vtk nor a vtp file." << std::endl ;
+            }
+            else
+            {
+                readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
+            }
             if( !readerPolyData.GetPointer() )
             {
                 return EXIT_FAILURE ;
