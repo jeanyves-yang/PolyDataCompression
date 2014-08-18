@@ -96,7 +96,7 @@ int main( int argc, char *argv[] )
     }
     if( !flagFound )
     {
-       std::cout << "Missing fileNameList flag, please give at least one file." << std::endl ;
+       std::cerr << "Missing fileNameList flag, please give at least one file." << std::endl ;
        return EXIT_FAILURE ;
     }
     argc = argc - ( fileNameList.empty() ? 0 : fileNameList.size() - 1 ) ;
@@ -115,13 +115,13 @@ int main( int argc, char *argv[] )
         {
             vtkSmartPointer< vtkPolyData > readerPolyData = vtkSmartPointer< vtkPolyData >::New() ;
             std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append ) ;
-            if ( ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) == NULL )
+            readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
+            if ( readerPolyData == NULL )
             {
-                std::cout << "input file is neither a vtk nor a vtp file." << std::endl ;
+                std::cerr << "input file is neither a vtk nor a vtp file." << std::endl ;
             }
             else
             {
-                readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
             }
             if( !readerPolyData.GetPointer() )
             {
