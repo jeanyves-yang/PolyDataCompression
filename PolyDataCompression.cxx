@@ -69,10 +69,10 @@ int WriteFile( std::string encoding , const char* outputFileName ,
     }
     else // should not arrive here. tested in main before already and program should exit at that time.
     {
-        return 1 ;
+        return -1 ;
     }
     writer->Update() ;
-    return 0 ;
+    return writer->GetErrorCode() ;
 }
 
 int main( int argc, char *argv[] )
@@ -130,7 +130,7 @@ int main( int argc, char *argv[] )
             {
                 return EXIT_FAILURE ;
             }
-            if( WriteFile( encoding , outputFileName.c_str() , compressionLevel , readerPolyData )  == 1 )
+            if( WriteFile( encoding , outputFileName.c_str() , compressionLevel , readerPolyData ) )
             {
                 return EXIT_FAILURE ;
             }

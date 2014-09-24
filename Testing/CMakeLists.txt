@@ -6,19 +6,21 @@ list(APPEND ExternalData_URL_TEMPLATES
 
 # Test checking that the program cannot run without the flag -f
 add_test(NAME PolyDataCompressionFlag COMMAND $<TARGET_FILE:PolyDataCompression>
-        -e ASCII)
+        -e ascii)
 set_tests_properties(PolyDataCompressionFlag PROPERTIES WILL_FAIL true )
 
 # Test checking that the file compressed is properly written
-add_test( NAME PolyDataCompressionCorrectOutput COMMAND $<TARGET_FILE:PolyDataCompression>
+ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionCorrectOutput COMMAND $<TARGET_FILE:PolyDataCompression>
     -e binary
-    -f Data/*.vtk
+    -f DATA{Data/baseline.vtk}
   )
 
 #Test checking that a file in the current directory can be compressed
-ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionCurrentDir COMMAND $<TARGET_FILE:PolyDataCompression>
+ExternalData_Expand_Arguments(PolyDataCompressionData expandedBaselinePath DATA{Data/baseline.vtk} )
+get_filename_component( FileDirectory ${expandedBaselinePath} DIRECTORY)
+ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionCurrentDir WORKING_DIRECTORY ${FileDirectory} COMMAND $<TARGET_FILE:PolyDataCompression>
     -e binary
-    -f DATA{baseline.vtk}
+    -f baseline.vtk#We do not specify the path of the file with DATA{} since we want to test that PolyDataCompression works when giving a file with no path
   )
 # Test checking that the help can be printed even if no input file is given.
 add_test(NAME PolyDataCompressionHelp COMMAND $<TARGET_FILE:PolyDataCompression>
