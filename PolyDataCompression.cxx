@@ -14,6 +14,10 @@
 
 std::string ChangeEndOfFileName ( std::string fileName, std::string change )
 {
+    if( itksys::SystemTools::GetFilenamePath( fileName ).empty() == true )
+    {
+        return itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change + ".vtp" ;
+    }
     return  itksys::SystemTools::GetFilenamePath( fileName )
             + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change + ".vtp" ;
 }

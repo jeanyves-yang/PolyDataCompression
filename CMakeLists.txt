@@ -21,6 +21,7 @@ SEMMacroBuildCLI(
   EXECUTABLE_ONLY
   TARGET_LIBRARIES ${ITK_LIBRARIES} ${VTK_LIBRARIES}
   )
+include(ExternalData)
 
 option(BUILD_TESTING "Build the testing tree" ON)
 
