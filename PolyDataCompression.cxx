@@ -121,7 +121,7 @@ int main( int argc, char *argv[] )
             readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
             if ( readerPolyData == NULL )
             {
-                std::cerr << "input file is neither a vtk nor a vtp file." << std::endl ;
+                std::cerr <<  fileNameList[ i ] << ": input file is neither a vtk nor a vtp file." << std::endl ;
             }
             else
             {
@@ -130,6 +130,7 @@ int main( int argc, char *argv[] )
             {
                 return EXIT_FAILURE ;
             }
+            std::cout << "Compressing: " << fileNameList[ i ] << std::endl ;
             if( WriteFile( encoding , outputFileName.c_str() , compressionLevel , readerPolyData ) )
             {
                 return EXIT_FAILURE ;

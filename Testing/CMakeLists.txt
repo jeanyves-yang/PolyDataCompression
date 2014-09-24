@@ -22,6 +22,16 @@ ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionCurrentDir
     -e binary
     -f baseline.vtk#We do not specify the path of the file with DATA{} since we want to test that PolyDataCompression works when giving a file with no path
   )
+
+# Test checking that * character is expanded (only checking on UNIX systems). We search for bash
+if( UNIX )
+  find_program( bashPath bash )
+  if( bashPath )
+    ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionStarExpansion COMMAND ${bashPath} -c
+    "$<TARGET_FILE:PolyDataCompression> -e binary -f ${FileDirectory}/*.vtk"
+    )
+  endif()
+endif()
 # Test checking that the help can be printed even if no input file is given.
 add_test(NAME PolyDataCompressionHelp COMMAND $<TARGET_FILE:PolyDataCompression>
     --help
