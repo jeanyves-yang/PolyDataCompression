@@ -94,14 +94,13 @@ int main( int argc, char *argv[] )
             flagFound = true ;
         }
     }
+    argc = argc - ( fileNameList.empty() ? 0 : fileNameList.size() - 1 ) ;
+    PARSE_ARGS ;
     if( !flagFound )
     {
        std::cerr << "Missing fileNameList flag, please give at least one file." << std::endl ;
        return EXIT_FAILURE ;
     }
-    argc = argc - ( fileNameList.empty() ? 0 : fileNameList.size() - 1 ) ;
-    PARSE_ARGS ;
-
     std::string append = "-compressed" ;
     for( size_t i = 0 ; i < fileNameList.size() ; i++ )
     {
