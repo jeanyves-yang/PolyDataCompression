@@ -22,25 +22,27 @@ std::string ChangeEndOfFileName ( std::string fileName, std::string change , std
             + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change +"." + extension ;
 }
 
-vtkSmartPointer< vtkPolyData > ReadFile( const char* fileName , std::string extension )
+int ReadFile( const char* fileName , std::string extension , vtkSmartPointer< vtkPolyData > &polyData )
 {
     if( extension == ".vtk" )
     {
         vtkSmartPointer< vtkPolyDataReader > reader = vtkSmartPointer< vtkPolyDataReader >::New() ;
         reader->SetFileName( fileName ) ;
         reader->Update() ;
-        return reader->GetOutput() ;
+        polyData = reader->GetOutput() ;
+        return reader->GetErrorCode() ;
     }
     else if( extension == ".vtp" )
     {
         vtkSmartPointer< vtkXMLPolyDataReader > reader = vtkSmartPointer< vtkXMLPolyDataReader >::New() ;
         reader->SetFileName( fileName ) ;
         reader->Update() ;
-        return reader->GetOutput() ;
+        polyData = reader->GetOutput() ;
+        return reader->GetErrorCode() ;
     }
     else
     {
-        return NULL ;
+        return 1 ;
     }
 }
 
@@ -142,13 +144,16 @@ int main( int argc, char *argv[] )
         {
             vtkSmartPointer< vtkPolyData > readerPolyData = vtkSmartPointer< vtkPolyData >::New() ;
             std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append , extension ) ;
-            readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
-            if ( readerPolyData == NULL )
+            std::ifstream infile( fileNameList[ i ].c_str() ) ;
+            if( !infile )
             {
-                std::cerr <<  fileNameList[ i ] << ": input file is neither a vtk nor a vtp file." << std::endl ;
+                std::cerr << "Unable to find input file: " << fileNameList[ i ] << std::endl ;
+                return EXIT_FAILURE ;
             }
-            else
+            if( ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) , readerPolyData ) != 0 )
             {
+                std::cerr << "Unable to open input file: " << fileNameList[ i ] << std::endl ;
+                return EXIT_FAILURE ;
             }
             if( !readerPolyData.GetPointer() )
             {
@@ -157,6 +162,7 @@ int main( int argc, char *argv[] )
             std::cout << "Compressing: " << fileNameList[ i ] << std::endl ;
             if( WriteFile( encoding , extension , outputFileName.c_str() , compressionLevel , readerPolyData ) )
             {
+                std::cerr << "Unable to write output file." << std::endl ;
                 return EXIT_FAILURE ;
             }
         }

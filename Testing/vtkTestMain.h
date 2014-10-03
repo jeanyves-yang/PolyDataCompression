@@ -51,6 +51,7 @@
 #include "vtkPoints.h"
 #include <vtkSmartPointer.h>
 #include <vtkCellData.h>
+#include <vtkXMLPolyDataReader.h>
 #define ITK_TEST_DIMENSION_MAX 6
 
 typedef int ( *MainFuncPointer )( int , char *[] ) ;
@@ -186,25 +187,58 @@ int main( int ac , char *av[] )
 
 // Regression Testing Code
 
+int ReadVTKVTPFile( const char* fileName , std::string extension , vtkSmartPointer< vtkPolyData > &polyData )
+{
+    if( extension == ".vtk" )
+    {
+        vtkSmartPointer< vtkPolyDataReader > reader = vtkSmartPointer< vtkPolyDataReader >::New() ;
+        reader->SetFileName( fileName ) ;
+        reader->Update() ;
+        polyData = reader->GetOutput() ;
+        return reader->GetErrorCode() ;
+    }
+    else if( extension == ".vtp" )
+    {
+        vtkSmartPointer< vtkXMLPolyDataReader > reader = vtkSmartPointer< vtkXMLPolyDataReader >::New() ;
+        reader->SetFileName( fileName ) ;
+        reader->Update() ;
+        polyData = reader->GetOutput() ;
+        return reader->GetErrorCode() ;
+    }
+    else
+    {
+        return 1 ;
+    }
+}
+
 int RegressionTestPolyData( const char *testImageFilename ,
                            const char *baselineImageFilename
                            )
 {
-    vtkSmartPointer<vtkPolyDataReader> polyReader1 =
-            vtkSmartPointer<vtkPolyDataReader>::New() ;
-    polyReader1->SetFileName( testImageFilename ) ;
-    polyReader1->Update() ;
     vtkSmartPointer<vtkPolyData> vtkpolydata1 =
             vtkSmartPointer<vtkPolyData>::New() ;
-    vtkpolydata1= polyReader1->GetOutput() ;
-    vtkSmartPointer<vtkPolyDataReader> polyReader2 =
-            vtkSmartPointer<vtkPolyDataReader>::New() ;
-    polyReader2->SetFileName( baselineImageFilename ) ;
-    polyReader2->Update() ;
     vtkSmartPointer<vtkPolyData> vtkpolydata2 =
             vtkSmartPointer<vtkPolyData>::New() ;
-    vtkpolydata2= polyReader2->GetOutput() ;
-
+    std::ifstream infile( testImageFilename ) ;
+    if( !infile )
+    {
+        std::cerr << "Unable to find: " << testImageFilename << std::endl ;
+        return -1 ;
+    }
+    std::ifstream infileBaseline( baselineImageFilename ) ;
+    if( !infileBaseline )
+    {
+        std::cerr << "Unable to find: " << baselineImageFilename << std::endl ;
+        return -1 ;
+    }
+    if( ReadVTKVTPFile( testImageFilename , itksys::SystemTools::GetFilenameExtension( testImageFilename ) , vtkpolydata1 ) != 0 )
+    {
+        return -1 ;
+    }
+    if( ReadVTKVTPFile( baselineImageFilename , itksys::SystemTools::GetFilenameExtension( baselineImageFilename) , vtkpolydata2 ) !=0 )
+    {
+            return -1 ;
+    }
     if( vtkpolydata2->GetNumberOfCells() != vtkpolydata1->GetNumberOfCells() )
     {
         return 1 ;

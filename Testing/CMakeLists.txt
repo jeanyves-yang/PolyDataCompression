@@ -32,10 +32,10 @@ ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionVTKExtensi
 ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionVTPExtension COMMAND $<TARGET_FILE:PolyDataCompressionTest>
   --compare
   DATA{Data/BaselineCingulumNormalRun-compressed.vtp}
-  ${CMAKE_CURRENT_BINARY_DIR}/Testing/Data/CingulumNormalRun-compressed.vtp
+  ${CMAKE_CURRENT_BINARY_DIR}/Data/CingulumNormalRun-compressed.vtp
   ModuleEntryPoint
   -e binary
-  -x vtk
+  -x vtp
   -c 3
   -f DATA{Data/CingulumNormalRun.vtk}
 )
