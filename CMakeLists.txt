@@ -13,7 +13,7 @@ find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
 # Find VTK
-find_package(VTK 6.1 REQUIRED NO MODULE)
+find_package(VTK 6.1 REQUIRED NO_MODULE)
 include(${VTK_USE_FILE})
 
 SEMMacroBuildCLI(

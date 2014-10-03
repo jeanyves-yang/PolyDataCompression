@@ -12,14 +12,14 @@
 #include <vtkZLibDataCompressor.h>
 #include <itksys/SystemTools.hxx>
 
-std::string ChangeEndOfFileName ( std::string fileName, std::string change )
+std::string ChangeEndOfFileName ( std::string fileName, std::string change , std::string extension )
 {
     if( itksys::SystemTools::GetFilenamePath( fileName ).empty() == true )
     {
-        return itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change + ".vtp" ;
+        return itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change + "." + extension ;
     }
     return  itksys::SystemTools::GetFilenamePath( fileName )
-            + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change + ".vtp" ;
+            + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension( fileName ) + change +"." + extension ;
 }
 
 vtkSmartPointer< vtkPolyData > ReadFile( const char* fileName , std::string extension )
@@ -44,35 +44,59 @@ vtkSmartPointer< vtkPolyData > ReadFile( const char* fileName , std::string exte
     }
 }
 
-int WriteFile( std::string encoding , const char* outputFileName ,
+int WriteFile( std::string encoding , std::string extension , const char* outputFileName ,
                 int compressionLevel , vtkSmartPointer< vtkPolyData > readerPolyData )
 {
-    vtkSmartPointer< vtkXMLPolyDataWriter > writer = vtkSmartPointer< vtkXMLPolyDataWriter >::New() ;
-    writer->SetFileName( outputFileName ) ;
-    writer->SetInputData( readerPolyData ) ;
-    vtkZLibDataCompressor *compressor = dynamic_cast< vtkZLibDataCompressor* > ( writer->GetCompressor() ) ;
-    if( compressor )
+    if( extension == "vtp" )
     {
-        compressor->SetCompressionLevel( compressionLevel ) ;
+        vtkSmartPointer< vtkXMLPolyDataWriter > writer = vtkSmartPointer< vtkXMLPolyDataWriter >::New() ;
+        writer->SetFileName( outputFileName ) ;
+        writer->SetInputData( readerPolyData ) ;
+        vtkZLibDataCompressor *compressor = dynamic_cast< vtkZLibDataCompressor* > ( writer->GetCompressor() ) ;
+        if( compressor )
+        {
+            compressor->SetCompressionLevel( compressionLevel ) ;
+        }
+        if( encoding == "binary" )
+        {
+            writer->SetDataModeToBinary() ;
+        }
+        else if( encoding == "appended" )
+        {
+            writer->SetDataModeToAppended() ;
+        }
+        else if( encoding == "ascii" )
+        {
+            writer->SetDataModeToAscii() ;
+        }
+        else // should not arrive here. tested in main before already and program should exit at that time.
+        {
+            return -1 ;
+        }
+        writer->Update() ;
+        return writer->GetErrorCode() ;
     }
-    if( encoding == "binary" )
+    else
     {
-        writer->SetDataModeToBinary() ;
+        vtkSmartPointer< vtkPolyDataWriter > writer = vtkSmartPointer< vtkPolyDataWriter >::New() ;
+        writer->SetFileName( outputFileName ) ;
+        writer->SetInputData( readerPolyData ) ;
+        if( encoding =="binary" )
+        {
+            writer->SetFileTypeToBinary();
+        }
+        else if( encoding == "ascii" )
+        {
+            writer->SetFileTypeToASCII() ;
+        }
+        else
+        {
+            return -1 ;
+        }
+
+        writer->Update() ;
+        return writer->GetErrorCode() ;
     }
-    else if( encoding == "appended" )
-    {
-        writer->SetDataModeToAppended() ;
-    }
-    else if( encoding == "ascii" )
-    {
-        writer->SetDataModeToAscii() ;
-    }
-    else // should not arrive here. tested in main before already and program should exit at that time.
-    {
-        return -1 ;
-    }
-    writer->Update() ;
-    return writer->GetErrorCode() ;
 }
 
 int main( int argc, char *argv[] )
@@ -117,7 +141,7 @@ int main( int argc, char *argv[] )
         else
         {
             vtkSmartPointer< vtkPolyData > readerPolyData = vtkSmartPointer< vtkPolyData >::New() ;
-            std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append ) ;
+            std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append , extension ) ;
             readerPolyData = ReadFile( fileNameList[ i ].c_str() , itksys::SystemTools::GetFilenameLastExtension( fileNameList[ i ] ) ) ;
             if ( readerPolyData == NULL )
             {
@@ -131,7 +155,7 @@ int main( int argc, char *argv[] )
                 return EXIT_FAILURE ;
             }
             std::cout << "Compressing: " << fileNameList[ i ] << std::endl ;
-            if( WriteFile( encoding , outputFileName.c_str() , compressionLevel , readerPolyData ) )
+            if( WriteFile( encoding , extension , outputFileName.c_str() , compressionLevel , readerPolyData ) )
             {
                 return EXIT_FAILURE ;
             }

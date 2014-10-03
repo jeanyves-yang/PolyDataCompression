@@ -14,6 +14,31 @@ ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionCorrectOut
     -e binary
     -f DATA{Data/baseline.vtk}
   )
+# Test of a normal run of the program with a VTK extension
+add_executable(PolyDataCompressionTest vtkTest.cxx)
+target_link_libraries(PolyDataCompressionTest PolyDataCompressionLib)
+ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionVTKExtension COMMAND $<TARGET_FILE:PolyDataCompressionTest>
+  --compare
+  DATA{Data/BaselineCingulumNormalRun-compressed.vtk}
+  ${CMAKE_CURRENT_BINARY_DIR}/Data/CingulumNormalRun-compressed.vtk
+  ModuleEntryPoint
+  -e binary
+  -x vtk
+  -c 3
+  -f DATA{Data/CingulumNormalRun.vtk}
+)
+
+# Test of a normal run of the program with a VTP extension
+ExternalData_Add_Test(PolyDataCompressionData NAME PolyDataCompressionVTPExtension COMMAND $<TARGET_FILE:PolyDataCompressionTest>
+  --compare
+  DATA{Data/BaselineCingulumNormalRun-compressed.vtp}
+  ${CMAKE_CURRENT_BINARY_DIR}/Testing/Data/CingulumNormalRun-compressed.vtp
+  ModuleEntryPoint
+  -e binary
+  -x vtk
+  -c 3
+  -f DATA{Data/CingulumNormalRun.vtk}
+)
 
 #Test checking that a file in the current directory can be compressed
 ExternalData_Expand_Arguments(PolyDataCompressionData expandedBaselinePath DATA{Data/baseline.vtk} )

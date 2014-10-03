@@ -18,6 +18,17 @@
          <element>ascii</element>
          <element>appended</element>
       </string-enumeration>
+      <string-enumeration>
+         <name>extension</name>
+         <label>extension</label>
+         <channel>input</channel>
+         <longflag>extension</longflag>
+         <flag>x</flag>
+         <description>File extension: vtk or vtp</description>
+         <element>vtk</element>
+         <element>vtp</element>
+         <default>vtp</default>
+      </string-enumeration>
       <integer>
          <name>compressionLevel</name>
          <longflag>compressionLevel</longflag>
