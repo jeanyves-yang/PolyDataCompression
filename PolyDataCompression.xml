@@ -3,7 +3,7 @@
    <category>Filtering.Arithmetic</category>
    <title>Threshold</title>
    <description>Binary threshold of a image</description>
-   <version>1.0.2</version>
+   <version>1.0.3</version>
    <parameters>
       <label>IO</label>
       <description>Input/Output parameters</description>
