@@ -37,6 +37,13 @@
          <description>Compression level, between 0 and 9. Set by default at 1. Changes barely noticeable.</description>
          <default>1</default>
       </integer>
+      <boolean>
+         <name>overwrite</name>
+         <longflag>overwrite</longflag>
+         <label>Replace directly the input file by the output file, there is no temporary file.</label>
+         <channel>input</channel>
+         <description>Replace directly the input file by the output file, there is no temporary file.</description>
+      </boolean>
       <string-vector>
          <channel>input</channel>
          <name>filelist</name>

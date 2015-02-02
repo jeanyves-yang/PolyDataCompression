@@ -143,7 +143,6 @@ int main( int argc, char *argv[] )
         else
         {
             vtkSmartPointer< vtkPolyData > readerPolyData = vtkSmartPointer< vtkPolyData >::New() ;
-            std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append , extension ) ;
             std::ifstream infile( fileNameList[ i ].c_str() ) ;
             if( !infile )
             {
@@ -160,10 +159,22 @@ int main( int argc, char *argv[] )
                 return EXIT_FAILURE ;
             }
             std::cout << "Compressing: " << fileNameList[ i ] << std::endl ;
-            if( WriteFile( encoding , extension , outputFileName.c_str() , compressionLevel , readerPolyData ) )
+            if( overwrite == 0 )
             {
-                std::cerr << "Unable to write output file." << std::endl ;
-                return EXIT_FAILURE ;
+                std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append , extension ) ;
+                if( WriteFile( encoding , extension , outputFileName.c_str() , compressionLevel , readerPolyData ) )
+                {
+                    std::cerr << "Unable to write output file." << std::endl ;
+                    return EXIT_FAILURE ;
+                }
+            }
+            else
+            {
+                if( WriteFile( encoding , extension , fileNameList[ i ].c_str() , compressionLevel , readerPolyData ) )
+                {
+                    std::cerr << "Unable to write output file." << std::endl ;
+                    return EXIT_FAILURE ;
+                }
             }
         }
     }
