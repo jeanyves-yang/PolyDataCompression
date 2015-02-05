@@ -170,6 +170,12 @@ int main( int argc, char *argv[] )
             }
             else
             {
+                std::string outputFileName = ChangeEndOfFileName( fileNameList[ i ] , append , extension ) ;
+                if( WriteFile( encoding , extension , outputFileName.c_str() , compressionLevel , readerPolyData ) )
+                {
+                    std::cerr << "Unable to write temporary compressed file." << std::endl ;
+                    return EXIT_FAILURE ;
+                }
                 if( WriteFile( encoding , extension , fileNameList[ i ].c_str() , compressionLevel , readerPolyData ) )
                 {
                     std::cerr << "Unable to write output file." << std::endl ;
